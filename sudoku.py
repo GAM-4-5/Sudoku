@@ -35,7 +35,7 @@ class Resetka:
             self.celije[red][stupac].set(val)
             self.update_model()
 
-            if valid(self.model, val, (red, stupac)) and solve(self.model):
+            if valid(self.model, val, (red, stupac)) and check(self.model):
                 return True
             else:
                 self.celije[red][stupac].set(0)
