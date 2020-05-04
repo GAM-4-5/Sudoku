@@ -27,13 +27,8 @@ class Sudoku:
         self.resetka = test
         self.odabrano = None
         self.pozicija = None
-        self.state = 'playing'
-        self.gotovo = False
-        self.promjena_celije = False
-        self.zakljucana_celija = []
-        self.netocna_celija = []
         self.font = pygame.font.SysFont("arial", 50//2)
-        self.load()
+
         
     def pokreni(self):
         while self.pokrenuto:
@@ -57,113 +52,25 @@ class Sudoku:
                 else:
                     self.odabrano = None
                     
-            #kada upisemo broj
-            if pokusaj.type == pygame.KEYDOWN:
-                if self.odabrano != None and self.odabrano not in self.zakljucana_celija:
-                    if self.isInt(pokusaj.unicode):
-                        self.resetka[self.odabrano[1]][self.odabrano[0]] = int(pokusaj.unicode)
-                        self.promjena_celije = True
-                    
                 
 #moguce odabrati celiju samo unutar resetke
                     
     def update(self):
         self.pozicija = pygame.mouse.get_pos()
-        if self.promjena_celije:
-            self.netocna_celija = []
-            if self.sve_celije():
-                self.provjeri_sve_celije()
+
 
 
     def nacrtaj(self):
         self.prozor.fill(bijelo)
         if self.odabrano:
             self.nacrtajOdabir(self.prozor, self.odabrano)
-        self.boja_zakljucane_celije(self.prozor, self.zakljucana_celija)
-        self.boja_netocne_celije(self.prozor, self.netocna_celija)
         self.brojevi(self.prozor)
         self.nacrtajResetku(self.prozor)
         pygame.display.update()
-        self.promjena_celije = False
-        
-#popunjava prozor bijelom bojom i smjesta resetku u prozor
 
-    def sve_celije(self):
-        for red in self.resetka:
-            for broj in red:
-                if broj == 0:
-                    return False
-        return True
-    
-    def provjeri_sve_celije(self):
-        self.provjeri_redove()
-        self.provjeri_stupce()
-        self.provjeri_male_resetke()
-
-
-    def provjeri_male_resetke(self):
-        for a in range(3):
-            for b in range(3):
-                mogucnosti = [1,2,3,4,5,6,7,8,9]
-                for i in range(3):
-                    for j in range(3):
-                        x = a * 3 + i
-                        y = b * 3 + j
-                        if self.resetka[y][x] in mogucnosti:
-                            mogucnosti.remove(self.resetka[y][x])
-                        else:
-                            if [x, y] not in self.zakljucana_celija and [x, y] not in self.netocna_celija:
-                                self.netocna_celija.append([x, y])
-                            if [x, y] in self.zakljucana_celija:
-                                for k in range(3):
-                                    for l in range(3):
-                                        x2 = a * 3 + k
-                                        y2 = b * 3 + l
-                                        if self.resetka[y2][x2] == self.resetka[y][x] and [x2, y2] not in self.zakljucana_celija:
-                                            self.netocna_celija.append([x2, y2])
-                                
- #provjerava ako se broj ponavlja u maloj resetki (3x3)                               
-                        
-    def provjeri_redove(self):
-        for x in range(9):
-            mogucnosti = [1,2,3,4,5,6,7,8,9]
-            for y, red in enumerate(self.resetka):
-                if self.resetka[y][x] in mogucnosti:
-                    mogucnosti.remove(self.resetka[y][x])
-                else:
-                    if [x, y] not in self.zakljucana_celija and [x, y] not in self.netocna_celija:
-                        self.netocna_celija.append([x, y])
-                    if [x, y] in self.zakljucana_celija:
-                        for i in range (9):
-                            if self.resetka[y][i] == self.resetka[y][x] and [i, y] not in self.zakljucana_celija:
-                                self.netocna_celija.append([i, y])
-
-                        
-#provjerava ako se broj ponavlja u redu
-
-    def provjeri_stupce(self):
-        for y, red in enumerate(self.resetka):
-            mogucnosti = [1,2,3,4,5,6,7,8,9]
-            for x in range(9):
-                if self.resetka[y][x] in mogucnosti:
-                    mogucnosti.remove(self.resetka[y][x])
-                else:
-                    if [x, y] not in self.zakljucana_celija and [x, y] not in self.netocna_celija:
-                        self.netocna_celija.append([x, y])
-                    if [x, y] in self.zakljucana_celija:
-                        for i, red in enumerate(self.resetka):
-                            if self.resetka[i][x] == self.resetka[y][x] and [x, i] not in self.zakljucana_celija:
-                                self.netocna_celija.append([x, i])
+                  
                
-#provjerava ako se broj ponavlja u stupcu
-               
-    def boja_netocne_celije(self, prozor, netocno):
-        for celija in netocno:
-            pygame.draw.rect(prozor, crveno, (celija[0] * 50 + poz_re[0], celija[1] * 50 + poz_re[1], 50, 50))
 
-    def boja_zakljucane_celije(self, prozor, zakljucano):
-        for celija in zakljucano:
-            pygame.draw.rect(prozor, sivo, (celija[0] * 50 + poz_re[0], celija[1] * 50 + poz_re[1], 50, 50))
 
     def brojevi(self, prozor):
         for y, red in enumerate(self.resetka):
@@ -206,15 +113,4 @@ class Sudoku:
         prozor.blit(font, poz)
         
 
-    def load(self):
-        for y, red in enumerate(self.resetka):
-            for x, br in enumerate(red):
-                if br != 0:
-                    self.zakljucana_celija.append([x, y])
-        
-    def isInt(self, string):
-        try:
-            int(string)
-            return True
-        except:
-            return False
+  
