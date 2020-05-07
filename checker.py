@@ -1,3 +1,4 @@
+# provjerava ako je uneseni broj pravo rjesenje za odabranu celiju
 def check(b):
     find = find_empty(b)
     if not find:
@@ -28,7 +29,7 @@ def valid(b, br, poz):
         if b[i][poz[1]] == br and poz[0] != i:
             return False
 
-    # 3x3
+    # 3x3 kvadrat
     box_x = poz[1] // 3
     box_y = poz[0] // 3
 
