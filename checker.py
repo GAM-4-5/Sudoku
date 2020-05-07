@@ -1,5 +1,10 @@
 # provjerava ako je uneseni broj pravo rjesenje za odabranu celiju
 def check(b):
+    f = prazno(b)
+    if not f:
+        return True
+    else:
+        red, stupac = f
     for i in range(1, 10):
         if valid(b, i, (red, stupac)):
             b[red][stupac] = i
@@ -25,3 +30,10 @@ def valid(b, br, poz):
             if b[i][j] == br and (i,j) != poz:
                 return False
     return True
+def prazno(b):
+    for i in range(len(b)):
+        for j in range(len(b[0])):
+            if b[i][j] == 0:
+                return (i, j) # red, stupac
+    return None
+                    
