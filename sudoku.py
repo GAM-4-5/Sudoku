@@ -282,9 +282,9 @@ def main():
                     i, j = board.selected
                     if board.celije[i][j].temp != 0:
                         if board.place(board.celije[i][j].temp):
-                            print("Uspjeh!") # uneseni broj je tocan
+                            print("Uspješno unesen broj!") # uneseni broj je tocan
                         else:
-                            print("Krivo!") # uneseni broj je netocan
+                            print("Krivo unesen broj!") # uneseni broj je netocan
                             pokusaji += 1
                         k = None
                         if board.zavrseno():
