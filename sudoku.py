@@ -229,8 +229,8 @@ def dodatci(prozor, board, time, pokusaji):
     prozor.fill((255, 255, 255))
     # vrijeme
     font = pygame.font.SysFont("arial", 40)
-    text = font.render("Vrijeme: " + vrijeme(time), 1, (25, 25, 112))
-    prozor.blit(text, (335, 547))
+    text = font.render("Vrijeme:" + vrijeme(time), 1, (25, 25, 112))
+    prozor.blit(text, (320, 547))
     # pokusaji
     text = font.render("X " * pokusaji, 1, (255, 0, 0))
     prozor.blit(text, (20, 547))
