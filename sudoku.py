@@ -104,7 +104,8 @@ class Resetka:
         [2, 1, 8, 0, 0, 6, 0, 4, 5],
         [0, 5, 0, 0, 8, 0, 0, 9, 0]
     ]]
-# bira random ploce
+
+# nasumicno se biraju ploce iz liste boards    
     board = boards[randint(0, 8)]
 
     def __init__(self, redovi, stupci, sirina, visina):
@@ -119,12 +120,12 @@ class Resetka:
     def update_model(self):
         self.model = [[self.celije[i][j].value for j in range(self.stupci)] for i in range(self.redovi)]
 
+# provjerava unesenu vrijednost        
     def place(self, val):
         red, stupac = self.selected
         if self.celije[red][stupac].value == 0:
             self.celije[red][stupac].set(val)
             self.update_model()
-
             if valid(self.model, val, (red, stupac)) and check(self.model):
                 return True
             else:
@@ -133,21 +134,22 @@ class Resetka:
                 self.update_model()
                 return False
 
+ # privremeno rjesenje (nije potvrđeno)           
     def sketch(self, val):
         red, stupac = self.selected
         self.celije[red][stupac].set_temp(val)
 
+# crta resetku        
     def draw(self, prozor):
         # linije
         g = self.sirina // 9
         for i in range(self.redovi + 1):
             if i % 3 == 0 and i != 0:
-                d = 4
+                d = 3
             else:
                 d = 1
             pygame.draw.line(prozor, (0, 0, 0), (0, i * g), (self.sirina, i * g), d)
             pygame.draw.line(prozor, (0, 0, 0), (i * g, 0), (i * g, self.visina), d)
-
         # celije
         for i in range(self.redovi):
             for j in range(self.stupci):
@@ -157,15 +159,16 @@ class Resetka:
         for i in range(self.redovi):
             for j in range(self.stupci):
                 self.celije[i][j].selected = False
-
         self.celije[red][stupac].selected = True
         self.selected = (red, stupac)
 
+# ako zelimo obrisati uneseni broj, a nismo ga jos potvrdili        
     def clear(self):
         red, stupac = self.selected
         if self.celije[red][stupac].value == 0:
             self.celije[red][stupac].set_temp(0)
 
+ # pozicija odabrane celije           
     def click(self, poz):
         if poz[0] < self.sirina and poz[1] < self.visina:
             g = self.visina // 9
@@ -175,6 +178,7 @@ class Resetka:
         else:
             return None
 
+# provjerava ako ima praznih celija na ploci        
     def is_finished(self):
         for i in range(self.redovi):
             for j in range(self.stupci):
@@ -196,29 +200,30 @@ class Celija:
         self.visina = visina
         self.selected = False
 
+# crta odabranu celiju (plavo) i broj koji upisujemo        
     def draw(self, prozor):
         font = pygame.font.SysFont("arial", 40)
         g = self.sirina // 9
         x = self.stupac * g
         y = self.red * g
-
         if self.temp != 0 and self.value == 0:
             text = font.render(str(self.temp), 1, (128, 128, 128))
             prozor.blit(text, (x + 5, y + 5))
         elif not(self.value == 0):
             text = font.render(str(self.value), 1, (0, 0, 0))
             prozor.blit(text, (x + (g // 2 - text.get_width() // 2), y + (g // 2 - text.get_height() // 2)))
-
         if self.selected:
-            pygame.draw.rect(prozor, (255, 0, 0), (x, y, g, g), 3)
+            pygame.draw.rect(prozor, (0, 0, 255), (x, y, g, g), 3)
 
+# uneseno (potvrđeno) rjesenje          
     def set(self, val):
         self.value = val
 
+# privremeno (neuneseno) rjesenje       
     def set_temp(self, val):
         self.temp = val
 
-
+# crta pokusaje (X ako je uneseni broj netocan) i vrijeme        
 def redraw_prozor(prozor, board, time, pokusaji):
     prozor.fill((255, 255, 255))
     # vrijeme
@@ -276,29 +281,24 @@ def main():
                     i, j = board.selected
                     if board.celije[i][j].temp != 0:
                         if board.place(board.celije[i][j].temp):
-                            print("Uspjeh!")
+                            print("Uspjeh!") # uneseni broj je tocan
                         else:
-                            print("Krivo!")
+                            print("Krivo!") # uneseni broj je netocan
                             pokusaji += 1
                         key = None
-
                         if board.is_finished():
-                            print("Game over!")
+                            print("Igra je završena!") # ploca je zavrsena
                             run = False
-
             if event.type == pygame.MOUSEBUTTONDOWN:
                 poz = pygame.mouse.get_pos()
                 clicked = board.click(poz)
                 if clicked:
                     board.select(clicked[0], clicked[1])
                     key = None
-
         if board.selected and key != None:
             board.sketch(key)
-
         redraw_prozor(prozor, board, play_time, pokusaji)
         pygame.display.update()
-
 
 main()
 pygame.quit()
