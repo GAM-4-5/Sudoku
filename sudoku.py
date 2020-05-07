@@ -135,7 +135,7 @@ class Resetka:
                 return False
 
  # privremeno rjesenje (nije potvrđeno)           
-    def sketch(self, val):
+    def skica(self, val):
         red, stupac = self.selected
         self.celije[red][stupac].set_temp(val)
 
@@ -144,7 +144,7 @@ class Resetka:
         # linije
         g = self.sirina // 9
         for i in range(self.redovi + 1):
-            if i % 3 == 0 and i != 0:
+            if i % 3 == 0:
                 d = 3
             else:
                 d = 1
@@ -179,7 +179,7 @@ class Resetka:
             return None
 
 # provjerava ako ima praznih celija na ploci        
-    def is_finished(self):
+    def zavrseno(self):
         for i in range(self.redovi):
             for j in range(self.stupci):
                 if self.celije[i][j].value == 0:
@@ -200,20 +200,21 @@ class Celija:
         self.visina = visina
         self.selected = False
 
-# crta odabranu celiju (plavo) i broj koji upisujemo        
+# oboji odabranu celiju (plavo) i crta broj koji upisujemo (plavo - nepotvrđeni, crno - potvrđeni)       
     def draw(self, prozor):
         font = pygame.font.SysFont("arial", 40)
+        font2 = pygame.font.SysFont("arial", 30)
         g = self.sirina // 9
         x = self.stupac * g
         y = self.red * g
+        if self.selected:
+            pygame.draw.rect(prozor, (240, 248, 255), (x, y, g, g))
         if self.temp != 0 and self.value == 0:
-            text = font.render(str(self.temp), 1, (128, 128, 128))
+            text = font2.render(str(self.temp), 1, (70, 130, 180))
             prozor.blit(text, (x + 5, y + 5))
         elif not(self.value == 0):
             text = font.render(str(self.value), 1, (0, 0, 0))
             prozor.blit(text, (x + (g // 2 - text.get_width() // 2), y + (g // 2 - text.get_height() // 2)))
-        if self.selected:
-            pygame.draw.rect(prozor, (0, 0, 255), (x, y, g, g), 3)
 
 # uneseno (potvrđeno) rjesenje          
     def set(self, val):
@@ -224,59 +225,59 @@ class Celija:
         self.temp = val
 
 # crta pokusaje (X ako je uneseni broj netocan) i vrijeme        
-def redraw_prozor(prozor, board, time, pokusaji):
+def dodatci(prozor, board, time, pokusaji):
     prozor.fill((255, 255, 255))
     # vrijeme
     font = pygame.font.SysFont("arial", 40)
-    text = font.render("Vrijeme: " + format_time(time), 1, (0, 0, 0))
-    prozor.blit(text, (340, 550))
+    text = font.render("Vrijeme: " + vrijeme(time), 1, (25, 25, 112))
+    prozor.blit(text, (335, 547))
     # pokusaji
     text = font.render("X " * pokusaji, 1, (255, 0, 0))
-    prozor.blit(text, (20, 550))
+    prozor.blit(text, (20, 547))
     board.draw(prozor)
 
-def format_time(secs):
-    sec = secs%60
-    minute = secs//60
-    hour = minute//60
-    v = " " + str(minute) + ":" + str(sec)
+def vrijeme(sek):
+    s = sek % 60
+    m = sek // 60
+    h = m // 60
+    v = " " + str(m) + ":" + str(s)
     return v
 
 def main():
-    prozor = pygame.display.set_mode((540,600))
+    prozor = pygame.display.set_mode((540, 600))
     pygame.display.set_caption("Sudoku")
     board = Resetka(9, 9, 540, 540)
-    key = None
-    run = True
+    k = None
+    r = True
     start = time.time()
     pokusaji = 0
-    while run:
+    while r:
         play_time = round(time.time() - start)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                run = False
+                r = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_1:
-                    key = 1
+                    k = 1
                 if event.key == pygame.K_2:
-                    key = 2
+                    k = 2
                 if event.key == pygame.K_3:
-                    key = 3
+                    k = 3
                 if event.key == pygame.K_4:
-                    key = 4
+                    k = 4
                 if event.key == pygame.K_5:
-                    key = 5
+                    k = 5
                 if event.key == pygame.K_6:
-                    key = 6
+                    k = 6
                 if event.key == pygame.K_7:
-                    key = 7
+                    k = 7
                 if event.key == pygame.K_8:
-                    key = 8
+                    k = 8
                 if event.key == pygame.K_9:
-                    key = 9
+                    k = 9
                 if event.key == pygame.K_DELETE:
                     board.clear()
-                    key = None
+                    k = None
                 if event.key == pygame.K_RETURN:
                     i, j = board.selected
                     if board.celije[i][j].temp != 0:
@@ -285,19 +286,19 @@ def main():
                         else:
                             print("Krivo!") # uneseni broj je netocan
                             pokusaji += 1
-                        key = None
-                        if board.is_finished():
+                        k = None
+                        if board.zavrseno():
                             print("Igra je završena!") # ploca je zavrsena
-                            run = False
+                            r = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 poz = pygame.mouse.get_pos()
                 clicked = board.click(poz)
                 if clicked:
                     board.select(clicked[0], clicked[1])
-                    key = None
-        if board.selected and key != None:
-            board.sketch(key)
-        redraw_prozor(prozor, board, play_time, pokusaji)
+                    k = None
+        if board.selected and k != None:
+            board.skica(k)
+        dodatci(prozor, board, play_time, pokusaji)
         pygame.display.update()
 
 main()
